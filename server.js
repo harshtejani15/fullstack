@@ -10,7 +10,7 @@ dotenv.config();
 const app = express();
 
 // Middleware
-app.use(cors({ origin: 'https://eclectic-rugelach-e6de8e.netlify.app/' }));
+app.use(cors({ origin: 'http://eclectic-rugelach-e6de8e.netlify.app/' }));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
