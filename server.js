@@ -8,15 +8,8 @@ const authRoutes = require('./routes/auth');
 
 // Load environment variables
 dotenv.config();
+console.log('Loaded JWT_SECRET in server.js:', process.env.JWT_SECRET);
 
-if (!process.env.JWT_SECRET || !process.env.MONGODB_URI) {
-  console.error('❌ Missing required environment variables');
-  process.exit(1);
-}
-
-console.log('✅ Loaded JWT_SECRET in server.js');
-
-// Initialize Express
 const app = express();
 
 // Middleware
@@ -24,42 +17,43 @@ app.use(cors({ origin: 'https://eclectic-rugelach-e6de8e.netlify.app/' }));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
-// Log incoming requests
+// Log all incoming requests for debugging
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
 
-// API Routes
+// Routes
 app.use('/api/photos', photoRoutes);
 app.use('/api/blogs', blogRoutes);
 app.use('/api/auth', authRoutes);
 
-// Default API status route
+// Test route to confirm server is running
 app.get('/api', (req, res) => {
-  res.json({ message: 'API is running 🚀' });
+  res.json({ message: 'API is running' });
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ message: '❌ Route not found' });
+// Handle 404 errors
+app.use((req, res, next) => {
+  res.status(404).json({ message: 'Route not found' });
 });
 
-// Global error handler
+// Error handling middleware
 app.use((err, req, res, next) => {
-  console.error('🔥 Server error:', err);
+  console.error('Server error:', err);
   res.status(500).json({ message: 'Server error', error: err.message });
 });
 
-// MongoDB connection and server start
+// Connect to MongoDB and start server
 const PORT = process.env.PORT || 5000;
 mongoose
   .connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
-    console.log('✅ MongoDB connected');
-    app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+    console.log('MongoDB connected');
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
   })
   .catch((err) => {
-    console.error('❌ MongoDB connection error:', err.message);
-    process.exit(1);
+    console.error('MongoDB connection error:', err);
   });
