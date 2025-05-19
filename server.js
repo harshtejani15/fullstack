@@ -17,11 +17,13 @@ const allowedOrigins = [
 ];
 
 // Configure CORS
+const app = express();
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
+    console.log('CORS check - Request Origin:', origin);
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
+      console.log('CORS allowed for origin:', origin);
       return callback(null, true);
     } else {
       console.log(`CORS error: Origin ${origin} not allowed`);
@@ -32,15 +34,13 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-const app = express();
-
 // Middleware
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
 // Log all incoming requests for debugging
 app.use((req, res, next) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - Origin: ${req.headers.origin}`);
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} - Origin: ${req.headers.origin} - Headers:`, req.headers);
   next();
 });
 
