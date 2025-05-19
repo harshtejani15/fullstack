@@ -20,7 +20,7 @@ console.log('✅ Loaded JWT_SECRET in server.js');
 const app = express();
 
 // Middleware
-app.use(cors({ origin: 'http://localhost:5173/' }));
+app.use(cors({ origin: 'https://eclectic-rugelach-e6de8e.netlify.app/' }));
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
